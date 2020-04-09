@@ -1,0 +1,46 @@
+@layout('master') 
+@section('content')
+<div class="container">
+    <div class="row">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+          <div class="card-body">
+            <h5 class="card-title text-center">Sign Up</h5>
+          <form class="form-signin" method="POST" action="/register">
+              {{ csrfField() }}
+              <div class="row">
+                <div class="form-label-group col">
+                    <label for="fname">Meno</label>
+                    <input type="text" id="fname" name="fname" class="form-control" placeholder="First name" value="" required>
+                </div>
+                <div class="form-label-group col">
+                    <label for="lname">Prizvisko</label>
+                    <input type="text" id="lname" name="lname" class="form-control" placeholder="Last name" value="" required>
+                </div>
+            </div>
+              <div class="form-label-group">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Email address" value="" required autofocus>
+              </div>
+              <div class="form-label-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" value="" placeholder="Password" required>
+              </div>
+            <div class="form-label-group">
+                <label for="conf_password">Confirm password</label>
+                <input type="password" id="conf_password" name="conf_password" class="form-control" value="" placeholder="Confirm password" onkeyup='checkPassword();' required>
+                <span id="pass_icon" class="material-icons"></span> <span id='pass_message'></span>
+              </div>
+              <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign up</button>
+              <hr class="my-4">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+@endsection
+
+@section('body_scripts')
+    {{ script('passwordCheck.js') }}
+@endsection

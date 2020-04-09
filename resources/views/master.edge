@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Task List</title>
+    {{ style('main') }}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    {{ style('https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"') }}
+    {{ script('https://code.jquery.com/jquery-3.4.1.slim.min.js') }}
+    {{ script('https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js') }}
+    {{ script('https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js') }}
+    
+</head>
+<body>
+    <main>
+        @!section('content')
+    </main>
+    @!section('body_scripts')
+    <script type="text/javascript">
+    $(document).ready(function() {
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+            });
+        }, 4000);
+    });
+    </script>
+    {{script('main')}}
+</body>
+</html>

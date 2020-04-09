@@ -1,0 +1,57 @@
+:root {
+  --input-padding-x: 1.5rem;
+  --input-padding-y: 0.75rem;
+}
+
+body {
+  background: rgb(196, 206, 224);
+  /* background: linear-gradient(to right, rgb(196, 206, 224), rgb(90, 98, 112));*/
+}
+
+.card-signin {
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1.5rem 0 rgba(0, 0, 0, 0.2);
+}
+
+.card-signin .card-title {
+  margin-bottom: 2rem;
+  font-weight: 300;
+  font-size: 1.5rem;
+}
+
+.card-signin .card-body {
+  padding: 2rem;
+}
+
+.form-signin {
+  width: 100%;
+}
+
+.form-signin .btn {
+  font-size: 80%;
+  border-radius: 5rem;
+  letter-spacing: 0.1rem;
+  font-weight: bold;
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.form-label-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.form-label-group input {
+  height: auto;
+  border-radius: 2rem;
+}
+
+.fade {
+   opacity: 0;
+   -webkit-transition: opacity 1.25s linear;
+      -moz-transition: opacity 1.25s linear;
+       -ms-transition: opacity 1.25s linear;
+        -o-transition: opacity 1.25s linear;
+           transition: opacity 1.25s linear;
+ }
