@@ -18,8 +18,9 @@ const Route = use("Route");
 
 Route.on("/").render("welcome");
 Route.get("users", "UserController.index");
-Route.post("/register", "UserController.store").middleware('guest')
-.as('user.register');
+Route.post("/register", "UserController.store")
+  .middleware("guest")
+  .as("user.register");
 
 Route.get("/login", ({ view }) => {
   return view.render("auth.login");
@@ -32,5 +33,9 @@ Route.get("/register", ({ view }) => {
 Route.post("login", "UserController.login")
   .middleware("guest")
   .as("user.login");
+
+Route.post("/order/:id", "SaleController.index").as("orderProfile");
+
+Route.get("/events/:id", "EventController.show").as("eventsProfile");
 
 Route.get("users/:id", "UserController.show").middleware("auth");

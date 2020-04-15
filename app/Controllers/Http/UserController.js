@@ -2,7 +2,7 @@
 
 const User = use("App/Models/User");
 
-const Database = use('Database')
+const Database = use("Database");
 
 class UserController {
   async index({ view }) {
@@ -14,14 +14,14 @@ class UserController {
   async login({ auth, request, response, view }) {
     console.log("asdas");
     const { email, password } = request.all();
-    try{
-    await auth.attempt(email, password);
+    try {
+      await auth.attempt(email, password);
 
-    response.redirect(`/users/${auth.user.id}`);
+      response.redirect(`/users/${auth.user.id}`);
 
-    return "Logged in successfully";
-    }catch(err){
-      return view.render('auth.login', {error: "Neplatne meno alebo heslo"});
+      return "Logged in successfully";
+    } catch (err) {
+      return view.render("auth.login", { error: "Neplatne meno alebo heslo" });
     }
   }
 

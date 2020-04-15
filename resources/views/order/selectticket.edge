@@ -1,0 +1,207 @@
+@layout('master') 
+
+@section('content')
+<hr />
+<div class="container" style="max-width: inherit;">
+  <ul class="nav nav-pills">
+    <li class="nav-item mr-4">
+      <div class="form-group">
+        <h6 for="sortBy" class="control-label">Sort By:</h6>
+        <select class="form-control" id="sortBy">
+          <option>Best deal</option>
+          <option>Lowest first</option>
+        </select>
+      </div>
+    </li>
+    <li class="nav-item mr-4">
+        <div class="form-group">
+            <h6 for="sortBy" class="control-label">Quantity:</h6>
+            <select class="form-control" id="sortBy">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+            </select>
+          </div>
+    </li>
+    <li class="nav-item mr-4">
+        <div class="form-group">
+            <h6 for="sortBy" class="control-label">Category:</h6>
+            <select class="form-control" id="sortBy">
+              <option>VIP</option>
+              <option>Basic</option>
+            </select>
+          </div>
+    </li>
+    <li class="nav-item">
+      <div class="container" style="max-width: 300px;">
+        <h6 class="control-label">Select price range:</h6>
+        <span>
+          <div class="d-flex justify-content-center">
+            <span>Od €</span>
+            <div class="col w-50">
+              <input
+                type="text"
+                name="min_price"
+                class="amountmin"
+                value="1"
+                readonly
+                style="
+                  border: 0;
+                  color: #000000;
+                  font-weight: bold;
+                  width: 100%;
+                  background-color: transparent;
+                "
+              />
+            </div>
+            <span>Do €</span>
+            <div class="col w-50">
+              <input
+                type="text"
+                name="max_price"
+                value="1"
+                class="amountmax"
+                readonly
+                style="
+                  border: 0;
+                  color: #000000;
+                  font-weight: bold;
+                  width: 100%;
+                  background-color: transparent;
+                "
+              />
+            </div>
+          </div>
+        </span>
+        <div class="mb-3 slider-range"></div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<hr />
+
+<div class="container" style="max-width: inherit;">
+  <div class="row justify-content-center">
+    <div class="col-6 left main-content-onepage" style="outline-width: thick;">
+      <ul class="list-group">
+          @each(ticket in tickets)
+        <li class="list-group-item">
+          <div class="card">
+            <div class="container">
+              <div class="row align-items-center justify-content-between">
+                <div class="col-7">
+                  <h5>Section {{ticket.sector}} - {{ticket.category}}</h5>
+                  <p>1-{{ticket.available}} tickets</p>
+                </div>
+                <div class="col-5">
+                  <button
+                    type="button"
+                    class="btn btn-light"
+                    data-toggle="modal"
+                    data-target="#ModalTicket{{ticket.id}}"
+                  >
+                    {{ticket.price}}e / person
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        @endeach
+      </ul>
+    </div>
+    <div class="col-6 right" style="outline-width: thick;">
+      MAPA IN PROGRESS MAYBE
+    </div>
+  </div>
+</div>
+
+@each(ticket in tickets)
+<div
+  class="modal"
+  id="ModalTicket{{ticket.id}}"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center" id="exampleModalLongTitle">
+          {{ event.title }}
+        </h4>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="row justify-content-between">
+            <div class="col-6 text-center">
+              <p>{{event.date}}</p>
+              <p>{{event.place}}</p>
+            </div>
+            <div class="col-6 text-center">
+              <p>Section {{ticket.sector}}</p>
+              <p>{{ticket.category}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center">
+          <label for="qua">Quantity:</label>
+          <select id="qua">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+        <div class="d-flex justify-content-center mt-2">
+          <label for="pricept">Price per ticket:</label>
+          <p id="pricept"><b>E {{ticket.price}}</b></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+        <form action="/order/{{event.id}}" method="POST">
+            {{ csrfField() }}
+            <button type="submit" name="ticketid" value="{{ticket.id}}" class="btn btn-primary">Continue to order</button>
+        </form>
+    </div>
+    </div>
+  </div>
+</div>
+@endeach
+
+@endsection 
+
+@section('body_scripts')
+<script>
+  $(function () {
+    $(".slider-range").slider({
+      range: true,
+      min: 0,
+      max: 1000,
+      values: [0, 500],
+      slide: function (event, ui) {
+        $(".amountmin").val(ui.values[0]);
+        $(".amountmax").val(ui.values[1]);
+      },
+    });
+    $(".amountmin").val($(".slider-range").slider("values", 0));
+    $(".amountmax").val($(".slider-range").slider("values", 1));
+  });
+</script>
+@endsection
