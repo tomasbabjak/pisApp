@@ -11,7 +11,7 @@ class TicketTypeSchema extends Schema {
       table.string("sector");
       table.decimal("price");
       table.integer("available");
-      table.json("array_seats");
+      // table.json("array_seats");
       table.integer("event_id").unsigned();
       table.foreign("event_id").references("id").inTable("events");
       table.integer("discount");

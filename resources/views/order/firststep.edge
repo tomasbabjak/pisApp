@@ -1,0 +1,135 @@
+@layout('master') 
+
+@section('content')
+<header>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-2">
+        <img
+          class="logo rounded"
+          src="{{ assetsUrl('newlogo.png') }}"
+          alt="LOGO"
+        />
+      </div>
+      <div class="col-10">
+        <div class="container-progressbar">
+          <ul class="progressbar">
+            <li>Košík</li>
+            <li>Údaje</li>
+            <li>Doprava</li>
+            <li>Kontrola</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-8">
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Ticket place</th>
+              <th scope="col">Price</th>
+              <th scope="col">Discount</th>
+            </tr>
+          </thead>
+          <tbody>
+            @each(seat in seats)
+            <tr>
+              <th scope="row">{{ $loop.index + 1 }}</th>
+              <td>{{ seat.sector }} / {{ seat.category }}</td>
+              <td>{{ seat.price }} €</td>
+              <td>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-primary">
+                    {{ seat.discountName }}
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu">
+                    @each(dis in discounts)
+                    <form action="/checkout/cart" method="POST">
+                      <input
+                        type="hidden"
+                        name="seat_num"
+                        value="{{ $parent.seat.tempID }}"
+                      />
+                      <button
+                        type="submit"
+                        class="dropdown-item"
+                        name="discount"
+                        value="{{ dis.id }}"
+                      >
+                        {{ dis.name }}
+                      </button>
+                    </form>
+                    @endeach
+                    <div class="dropdown-divider"></div>
+                    <form action="/checkout/cart" method="POST">
+                      <input
+                        type="hidden"
+                        name="seat_num"
+                        value="{{ seat.tempID }}"
+                      />
+                      <button
+                        type="submit"
+                        class="dropdown-item"
+                        name="discount"
+                        value="null"
+                      >
+                        No Discount
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            @endeach
+          </tbody>
+        </table>
+      </div>
+      <div class="col-4">
+        <div class="card border border-primary rounded pl-3">
+          <h5>
+            <b>{{ event.title }}</b>
+          </h5>
+          <p class="text-center">
+            {{ event.date }} <br />
+            {{ event.place }}
+          </p>
+          <p class="text-center">
+            Sector {{ sector }} <br />
+            Category: {{ category }}
+          </p>
+          <table style="width: 100%;">
+            <tbody>
+              <tr>
+                <td class="font-weight-bold">Quantity:</td>
+                <td class="text-center font-weight-bold">{{ quantity }}</td>
+              </tr>
+              <tr>
+                <td class="font-weight-bold">Total price</td>
+                <td class="text-center font-weight-bold">
+                  {{ total_price }} e
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+@endsection

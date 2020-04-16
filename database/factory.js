@@ -34,8 +34,22 @@ Factory.blueprint("App/Models/TicketType", (faker) => {
       faker.pickone(["1", "2", "3", "4", "5"]),
     price: faker.integer({ min: 5, max: 300 }),
     available: faker.integer({ min: 2, max: 20 }),
-    array_seats: JSON.stringify([1, 2, 3, 4, 5, 6, 45, 6, 7, 8, 9]),
+    // array_seats: JSON.stringify(
+    //   faker.pickset(
+    //     [1, 2, 3, 4, 5, 6, 45, 6, 7, 8, 9],
+    //     faker.integer({ min: 1, max: 11 })
+    //   )
+    // ),
     discount: null,
     event_id: null,
+  };
+});
+
+Factory.blueprint("App/Models/Discount", (faker) => {
+  return {
+    name: "ZTP",
+    percentual: true,
+    amount: 10,
+    ticket_type_id: null,
   };
 });

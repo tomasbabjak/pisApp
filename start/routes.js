@@ -34,8 +34,12 @@ Route.post("login", "UserController.login")
   .middleware("guest")
   .as("user.login");
 
-Route.post("/order/:id", "SaleController.index").as("orderProfile");
+Route.post("/checkout/cart", "SaleController.index").as("orderProfile");
 
 Route.get("/events/:id", "EventController.show").as("eventsProfile");
 
 Route.get("users/:id", "UserController.show").middleware("auth");
+
+Route.get("/checkout", ({ view }) => {
+  return view.render("order.firststep");
+});

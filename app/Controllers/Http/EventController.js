@@ -18,6 +18,7 @@ class EventController {
     return view.render("order.selectticket", {
       event: eve.toJSON(),
       tickets: tickets.toJSON(),
+      array6: [...Array(6)],
     });
   }
 }

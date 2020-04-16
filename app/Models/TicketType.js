@@ -5,7 +5,11 @@ const Model = use("Model");
 
 class TicketType extends Model {
   event() {
-    this.belongsTo("App/Models/Event");
+    return this.belongsTo("App/Models/Event");
+  }
+
+  discounts() {
+    return this.hasMany("App/Models/Discount");
   }
 }
 

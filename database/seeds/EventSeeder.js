@@ -23,6 +23,9 @@ class EventSeeder {
     console.log(event.id);
 
     for await (let ticket of ticketarray) {
+      const discount = await Factory.model("App/Models/Discount").create();
+      discount.ticket_type_id = ticket.id;
+      await discount.save();
       ticket.event_id = event.id;
       await ticket.save();
     }
