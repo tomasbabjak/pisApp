@@ -1,0 +1,48 @@
+@layout('master') 
+
+@section('content')
+<header>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-2">
+        <img
+          class="logo rounded"
+          src="{{ assetsUrl('newlogo.png') }}"
+          alt="LOGO"
+        />
+      </div>
+      <div class="col-10">
+        <div class="container-progressbar">
+          <ul class="progressbar">
+            <li class="act">cart</li>
+            <li class="act">Perosnal informations</li>
+            <li>Transport & Payment</li>
+            <li>Controll</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="container">
+  <div class="row">
+    <div class="col-8">
+    </div>
+    <div class="col-4">
+      @include("partial.sideticket")
+      <button
+        type="button"
+        class="btn btn-outline-info mt-2"
+        style="width: inherit;"
+      >
+        Foreign Currency
+      </button>
+    </div>
+  </div>
+  <div class="container d-flex justify-content-center">
+    <button form="accountForm" class="btn btn-primary mt-5" type="submit">
+      Continue in order
+    </button>
+  </div>
+
+  @endsection

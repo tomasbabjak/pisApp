@@ -1,0 +1,74 @@
+@layout('master') 
+
+@section('content')
+<header>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-2">
+        <img
+          class="logo rounded"
+          src="{{ assetsUrl('newlogo.png') }}"
+          alt="LOGO"
+        />
+      </div>
+      <div class="col-10">
+        <div class="container-progressbar">
+            <ul class="progressbar">
+              <li class="act">cart</li>
+              <li>User</li>
+              <li>Perosnal informations</li>
+              <li>Controll</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+  </div>
+</header>
+@if(error)
+<p>{{error}}</p>
+@endif
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-8">
+        <form id="accountForm" action="/checkout/user" method="POST">
+            <h4 class="mb-5 mt-5">Log in or Sign up to continue</h4>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="newOrCreate" id="exampleRadios1" value="1" checked>
+                <label class="form-check-label" for="exampleRadios1">
+                  Create a new account
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="newOrCreate" id="exampleRadios2" value="2">
+                <label class="form-check-label" for="exampleRadios2">
+                  Sign in to an existing account
+                </label>
+              </div>
+              <div class="mt-4">
+              <div class="form-group row">
+                <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                  <input type="email" class="form-control" id="inputEmail" name="email" value="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+                <div class="col-sm-10">
+                  <input type="password" class="form-control" id="inputPassword" name="password" value="">
+                </div>
+              </div>
+            </div>
+        </form>
+      </div>
+      <div class="col-4">
+        @include("partial.sideticket")
+      </div>
+    </div>
+  </div>
+  <div class="container d-flex justify-content-center">
+    <button form="accountForm" class="btn btn-primary mt-5"type="submit">Continue in order</button>
+  </div>
+</section>
+
+@endsection

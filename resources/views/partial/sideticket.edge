@@ -1,0 +1,31 @@
+<div class="card border border-primary rounded pl-3 mt-4">
+    <h5>
+      <b>{{ event.title }}</b>
+    </h5>
+    <p class="text-center">
+      {{ event.date }} <br />
+      {{ event.place }}
+    </p>
+    <p class="text-center">
+      Sector {{ sector }} <br />
+      Category: {{ category }}
+    </p>
+    <table style="width: 100%;">
+      <tbody>
+        <tr>
+          <td class="font-weight-bold">Quantity:</td>
+          <td class="text-center font-weight-bold">{{ quantity }}</td>
+        </tr>
+        @if(transportPrice)
+        <tr>
+            <td class="font-weight-bold">Transport price:</td>
+            <td class="text-center font-weight-bold">{{ transportPrice }}</td>
+          </tr>
+        @endif
+        <tr>
+          <td class="font-weight-bold">Total price</td>
+          <td class="text-center font-weight-bold">{{ total_price }} e</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

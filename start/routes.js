@@ -35,6 +35,20 @@ Route.post("login", "UserController.login")
   .as("user.login");
 
 Route.post("/checkout/cart", "SaleController.index").as("orderProfile");
+Route.get("/checkout/user", "SaleController.user").as("orderUser");
+Route.post("/checkout/user", "SaleController.loginCreate").as(
+  "orderloginCreate"
+);
+Route.get("/checkout/informations", "SaleController.personaldata").as(
+  "orderPersonal"
+);
+Route.post("/checkout/informations", "SaleController.billing").as(
+  "orderBilling"
+);
+
+Route.get("/checkout/transportPay", "SaleController.getTransportPay").as(
+  "transportPay"
+);
 
 Route.get("/events/:id", "EventController.show").as("eventsProfile");
 

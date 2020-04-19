@@ -1,0 +1,152 @@
+@layout('master') 
+
+@section('content')
+<header>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-2">
+        <img
+          class="logo rounded"
+          src="{{ assetsUrl('newlogo.png') }}"
+          alt="LOGO"
+        />
+      </div>
+      <div class="col-10">
+        <div class="container-progressbar">
+          <ul class="progressbar">
+            <li class="act">cart</li>
+            <li>Perosnal informations</li>
+            <li>Transport & Payment</li>
+            <li>Controll</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="container">
+  <div class="row">
+    <div class="col-8">
+      <form id="accountForm" method="POST" action="/checkout/informations" autocomplete="on">
+        <h3 class="mt-3">Billing Informations</h3>
+        <div class="form-cart">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputName">Meno*</label>
+              <input
+                type="text"
+                name="fname"
+                class="form-control"
+                id="inputName"
+                value=""
+                placeholder="Meno"
+                required
+              />
+            </div>
+            <div class="form-group col-md-6">
+              <label for="inputSurename">Priezvisko*</label>
+              <input
+                type="text"
+                name="lname"
+                class="form-control"
+                value=""
+                id="inputSurename"
+                placeholder="Priezvisko"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputCompany">Spoločnosť</label>
+            <input
+              type="text"
+              name="company"
+              class="form-control"
+              value=""
+              id="inputCompany"
+              placeholder=""
+            />
+          </div>
+          <div class="form-group">
+            <label for="inputMobile">Mobil</label>
+            <input
+              type="text"
+              name="phone"
+              class="form-control"
+              value=""
+              id="inputMobile"
+              placeholder="0918 123 456"
+            />
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-4 col-md-6">
+              <label for="inputStreet">Ulica*</label>
+              <input
+                type="text"
+                name="street"
+                class="form-control"
+                value=""
+                id="inputStreet"
+                placeholder="ulica"
+                required
+              />
+            </div>
+            <div class="form-group col-md-4 col-md-6">
+              <label for="inputNumber">c.*</label>
+              <input
+                type="text"
+                name="number"
+                class="form-control"
+                value=""
+                id="inputNumber"
+                placeholder="cislo domu"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputCity">Mesto*</label>
+              <input
+                type="text"
+                class="form-control"
+                value=""
+                id="inputCity"
+                name="city"
+                required
+              />
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inputState">Kraj*</label>
+              <select name="kraj" id="inputState" class="form-control">
+                  @each(region in regions)
+                    <option>{{region}}</option>
+                  @endeach
+              </select>
+            </div>
+            <div class="form-group col-md-2">
+              <label for="inputZip">PSC*</label>
+              <input
+                type="text"
+                class="form-control"
+                value=""
+                id="inputZip"
+                name="zip"
+                required
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-4">
+      @include("partial.sideticket")
+    </div>
+  </div>
+  <div class="container d-flex justify-content-center">
+    <button form="accountForm" class="btn btn-primary mt-5" type="submit">
+      Continue in order
+    </button>
+  </div>
+
+  @endsection
