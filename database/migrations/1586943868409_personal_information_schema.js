@@ -10,13 +10,13 @@ class PersonalInformationSchema extends Schema {
       table.string("fname");
       table.string("lname");
       table.string("email");
-      table.string("comapany");
+      table.string("company");
       table.string("phone");
       table.string("kraj");
       table.string("street");
       table.string("number");
       table.string("city");
-      table.string("PSC");
+      table.string("zip");
       table.timestamps();
     });
   }

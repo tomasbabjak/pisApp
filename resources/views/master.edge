@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Task List</title>
+    <title>Music portal</title>
     {{ style('main') }}
+    <link rel="icon" type="image/gif/png" href="{{ assetsUrl('newlogo.png') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     {{ style('https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"') }}
     {{ script('https://code.jquery.com/jquery-3.4.1.slim.min.js') }}
@@ -13,9 +14,94 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Just+Me+Again+Down+Here&display=swap" rel="stylesheet"> 
 </head>
 <body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="/events/1">        
+                <img
+                class="logo rounded"
+                src="{{ assetsUrl('newlogo.png') }}"
+                alt="LOGO"
+                style="height: 35px"
+                />
+                Music Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+        
+            <div class="collapse navbar-collapse" id="navbarColor01">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                  <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Events</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Artists</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Fresh News</a>
+                </li>
+              </ul>
+              <div>
+                <div class="customer-panel d-flex align-items-center">
+                    @loggedIn
+                    <div class="dropdown show">
+                        <a
+                            class="btn dropdown-toggle"
+                            href="#"
+                            role="button"
+                            id="dropdownMenuLink"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                        >
+                            <i class="material-icons">person</i
+                            >{{ auth.user.lname }}
+                        </a>
+    
+                        <div
+                            class="dropdown-menu"
+                            aria-labelledby="dropdownMenuLink"
+                        >
+                            <a class="dropdown-item" href="/user">My account</a>
+                            <a
+                                class="dropdown-item"
+                                href="/logout"
+                            >
+                            Logout
+                            </a>
+                            <form
+                                id="logout-form"
+                                action=""
+                                method="POST"
+                                style="display: none;"
+                            >
+                            </form>
+                        </div>
+                    </div>
+                    @else
+                    <a href="/login">
+                        <button class="btn">
+                            <i class="material-icons">person</i>
+                            Log In
+                        </button>
+                    </a>
+                    @endloggedIn
+                    <a href="/checkout/cart">
+                        <button class="btn">
+                            <i class="material-icons">shopping_cart</i>Cart
+                        </button>
+                    </a>
+                </div>
+              </div>
+            </div>
+          </nav>
+    </header>
     <main>
         @!section('content')
     </main>

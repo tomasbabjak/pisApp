@@ -14,10 +14,10 @@
       <div class="col-10">
         <div class="container-progressbar">
           <ul class="progressbar">
-            <li>Košík</li>
-            <li>Údaje</li>
-            <li>Doprava</li>
-            <li>Kontrola</li>
+            <li >cart</li>
+            <li >Perosnal informations</li>
+            <li >Transport & Payment</li>
+            <li >Controll</li>
           </ul>
         </div>
       </div>
@@ -101,6 +101,15 @@
       </div>
       <div class="col-4">
         @include("partial.sideticket")
+        <form action="/checkout/emptycart" method="post" style="width:inherit">
+        <button
+        type="submit"
+        class="btn btn-outline-danger mt-2"
+        style="width: inherit;"
+      >
+        Empty Cart
+      </button>
+    </form>
       </div>
     </div>
   </div>

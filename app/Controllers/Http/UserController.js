@@ -61,6 +61,11 @@ class UserController {
     }
     return auth.user;
   }
+
+  async logout({ auth, response }) {
+    await auth.logout();
+    response.redirect("back");
+  }
 }
 
 module.exports = UserController;

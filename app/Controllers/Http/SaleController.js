@@ -1,11 +1,13 @@
 "use strict";
-
+const { validate } = use("Validator");
 const Event = use("App/Models/Event");
+const Sale = use("App/Models/Sale");
 const Seat = use("App/Models/Seat");
 const Discount = use("App/Models/Discount");
 const User = use("App/Models/User");
 const PersonalInformation = use("App/Models/PersonalInformation");
-const request = require("request");
+const Payment = use("App/Models/Payment");
+const Transport = use("App/Models/Transport");
 const parser = require("xml2js").parseStringPromise;
 const soapRequest = require("easy-soap-request");
 
@@ -38,19 +40,134 @@ async function getRegions() {
       return regions;
     })
     .catch((err) => console.log(err));
+}
 
-  // return parser(body, (err, result) => {
-  //   let data = JSON.parse(JSON.stringify(result));
-  //   let regions =
-  //     data["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][0]["ns1:getAllResponse"][0][
-  //       "regions"
-  //     ][0]["region"];
+async function getPostPrice(zip) {
+  const distance = await getDistance(zip);
 
-  //   //console.log(JSON.parse(JSON.stringify(regions)));
+  const xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://pis.predmety.fiit.stuba.sk/pis/transportservices/post/types">
+  <soapenv:Header/>
+  <soapenv:Body>
+     <typ:priceForPackageDelivery>
+        <distance>${distance / 1000 + 10}</distance>
+        <weight>0.1</weight>
+        <width>0.22</width>
+        <height>0.11</height>
+        <depth>0.002</depth>
+        <max_days>5</max_days>
+     </typ:priceForPackageDelivery>
+  </soapenv:Body>
+</soapenv:Envelope>`;
 
-  //   regions = regions.map((item) => item.name[0]);
-  //   return regions;
-  // });
+  const { response } = await soapRequest({
+    url: "http://pis.predmety.fiit.stuba.sk/pis/ws/TransportServices/Post",
+    xml: xmlData,
+    headers: {
+      "Content-Type": "application/xml",
+    },
+  });
+  const { body } = response;
+
+  return parser(body)
+    .then((data) => {
+      let parsedData = JSON.parse(JSON.stringify(data));
+      let price =
+        parsedData["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][0][
+          "ns1:priceForPackageDeliveryResponse"
+        ][0]["price"][0];
+      return parseFloat(price).toFixed(2);
+    })
+    .catch((err) => console.log(err));
+}
+
+async function getDistance(zip) {
+  const xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://pis.predmety.fiit.stuba.sk/pis/geoservices/locations/types">
+  <soapenv:Header/>
+  <soapenv:Body>
+     <typ:distanceByZIP>
+        <zip_from>07501</zip_from>
+        <zip_to>${zip}</zip_to>
+     </typ:distanceByZIP>
+  </soapenv:Body>
+</soapenv:Envelope>`;
+
+  const { response } = await soapRequest({
+    url: "http://pis.predmety.fiit.stuba.sk/pis/ws/GeoServices/Locations",
+    xml: xmlData,
+    headers: {
+      "Content-Type": "application/xml",
+    },
+  });
+  const { body } = response;
+
+  return parser(body)
+    .then((data) => {
+      let parsedData = JSON.parse(JSON.stringify(data));
+      let distance =
+        parsedData["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][0][
+          "ns1:distanceByZIPResponse"
+        ][0]["distance"][0];
+      return distance;
+    })
+    .catch((err) => console.log(err));
+}
+
+async function getFCurrency(curr, amount) {
+  const xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://pis.predmety.fiit.stuba.sk/pis/currencyconvertor/types">
+  <soapenv:Header/>
+  <soapenv:Body>
+     <typ:convert>
+        <currency_from>eur</currency_from>
+        <currency_to>${curr}</currency_to>
+        <amount>${amount}</amount>
+        <precision>2</precision>
+     </typ:convert>
+  </soapenv:Body>
+</soapenv:Envelope>`;
+
+  const { response } = await soapRequest({
+    url: "http://pis.predmety.fiit.stuba.sk/pis/ws/CurrencyConvertor",
+    xml: xmlData,
+    headers: {
+      "Content-Type": "application/xml",
+    },
+  });
+  const { body } = response;
+
+  return parser(body)
+    .then((data) => {
+      let parsedData = JSON.parse(JSON.stringify(data));
+      let price =
+        parsedData["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][0][
+          "ns1:convertResponse"
+        ][0]["value"][0];
+      return price;
+    })
+    .catch((err) => console.log(err));
+}
+
+async function sendEmail(email, seatsIds, event) {
+  const xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://pis.predmety.fiit.stuba.sk/pis/notificationservices/email/types">
+  <soapenv:Header/>
+  <soapenv:Body>
+     <typ:notify>
+        <team_id>084</team_id>
+        <password>QLL9TL</password>
+        <address>${email}</address>
+        <subject>Hudobny portal - listky</subject>
+        <message>DObry den, vase listky na udolosť ${event.title}. Listky su...</message>
+     </typ:notify>
+  </soapenv:Body>
+</soapenv:Envelope>`;
+
+  const { response } = await soapRequest({
+    url: "http://pis.predmety.fiit.stuba.sk/pis/ws/NotificationServices/Email",
+    xml: xmlData,
+    headers: {
+      "Content-Type": "application/xml",
+    },
+  });
+  const { body } = response;
 }
 
 class SaleController {
@@ -62,7 +179,7 @@ class SaleController {
       "seat_num",
     ]);
 
-    if (!session.get("seats") || !query.seat_num) {
+    if (!session.get("cart") || !query.seat_num) {
       //const query = request.only(["ticketid", "ticket_quantity"]);
       const ticket = await TicketType.find(query.ticketid);
       const eve = await Event.find(ticket.event_id);
@@ -81,23 +198,26 @@ class SaleController {
 
       //console.log(seats);
 
-      session.put("seats", seats);
-      session.put("ticket", ticket.toJSON());
-      session.put("event", eve.toJSON());
+      // session.put("seats", seats);
+      // session.put("ticket", ticket.toJSON());
+      // session.put("event", eve.toJSON());
 
-      return view.render("order.firststep", {
+      session.put("cart", {
         seats: seats,
-        discounts: disc.toJSON(),
+        ticket: ticket.toJSON(),
         event: eve.toJSON(),
-        quantity: seats.length,
-        sector: ticket.sector,
-        category: ticket.category,
-        total_price: 200,
       });
+
+      const totalPrice = await seats.reduce((acc, curr) => {
+        return acc + +curr.price;
+      }, 0);
+
+      return response.route("getCart");
     } else {
-      const seats = session.get("seats");
-      const ticket = session.get("ticket");
-      const eve = session.get("event");
+      const cart = session.get("cart");
+      const seats = cart.seats;
+      const ticket = cart.ticket;
+      const eve = cart.event;
 
       //const query = request.only(["discount", "seat_num"]);
 
@@ -124,7 +244,38 @@ class SaleController {
       } else {
         modseat.price = ticket.price;
         modseat.discountName = "No Discount";
+        modseat.discount_id = null;
       }
+
+      // session.put("seats", seats);
+
+      session.put("cart", {
+        seats: seats,
+        ticket: ticket,
+        event: eve,
+      });
+
+      const totalPrice = await seats.reduce((acc, curr) => {
+        return acc + +curr.price;
+      }, 0);
+
+      return response.route("getCart");
+    }
+  }
+
+  async cart({ view, request, response, session }) {
+    const cart = session.get("cart");
+
+    if (!cart) {
+      return view.render("order.emptycart");
+    } else {
+      const seats = cart.seats;
+      const ticket = cart.ticket;
+      const eve = cart.event;
+
+      const disc = await Discount.query()
+        .where("ticket_type_id", ticket.id)
+        .fetch();
 
       const totalPrice = await seats.reduce((acc, curr) => {
         return acc + +curr.price;
@@ -142,10 +293,20 @@ class SaleController {
     }
   }
 
-  async user({ view, request, response, session }) {
-    const seats = session.get("seats");
-    const ticket = session.get("ticket");
-    const eve = session.get("event");
+  async emptyCart({ response, session }) {
+    session.forget("cart");
+    return response.route("getCart");
+  }
+
+  async user({ auth, view, request, response, session }) {
+    if (auth.user) {
+      return response.route("orderPersonal");
+    }
+
+    const cart = session.get("cart");
+    const seats = cart.seats;
+    const ticket = cart.ticket;
+    const eve = cart.event;
 
     if (!seats) {
       response.status(405).send("Error 405 Select seats first");
@@ -181,25 +342,34 @@ class SaleController {
         return user;
       } catch (err) {
         console.log(err);
-        return err;
+        session.withErrors({ login: "Wrong password or name" }).flashAll();
+        return response.route("orderUser");
       }
     } else if (newOrCreate == 1) {
-      const user = new User();
-      user.email = email;
-      user.password = password;
-      session.put("newUser", user.toJSON());
+      const exist = await User.findBy("email", email);
 
-      return response.route("orderPersonal");
+      if (!!exist) {
+        session.withErrors({ exist: "User exist" }).flashAll();
+        return response.route("orderUser");
+      } else {
+        const user = new User();
+        user.email = email;
+        user.password = password;
+        session.put("newUser", user.toJSON());
+
+        return response.route("orderPersonal");
+      }
     }
   }
 
   async personaldata({ view, request, response, session, auth }) {
-    const seats = session.get("seats");
-    const ticket = session.get("ticket");
-    const eve = session.get("event");
+    const cart = session.get("cart");
+    const seats = cart.seats;
+    const ticket = cart.ticket;
+    const eve = cart.event;
     const newUser = session.get("newUser");
 
-    if (!seats || (!auth.user && !newUser) || !newUser) {
+    if (!seats || (!auth.user && !newUser)) {
       response.status(405).send("Error 405 Select seats first");
     } else {
       const regions = await getRegions();
@@ -236,6 +406,24 @@ class SaleController {
       zip,
     } = request.all();
 
+    const rules = {
+      fname: "required|max:40|min:2",
+      lname: "required|max:40|min:2",
+      company: "string|max:255|min:3",
+      street: "required",
+      number: "required",
+      city: "required",
+      kraj: "required",
+      zip: "required",
+    };
+
+    const validation = await validate(request.all(), rules);
+
+    if (validation.fails()) {
+      session.withErrors(validation.messages()).flashAll();
+      return response.redirect("back");
+    }
+
     const userEmail = auth.user
       ? auth.user.email
       : session.get("newUser").email;
@@ -244,7 +432,7 @@ class SaleController {
     const personal = new PersonalInformation();
     personal.fname = fname;
     personal.lname = lname;
-    personal.enail = userEmail;
+    personal.email = userEmail;
     personal.company = company;
     personal.phone = phone;
     personal.kraj = kraj;
@@ -253,22 +441,53 @@ class SaleController {
     personal.city = city;
     personal.zip = zip;
 
-    session.put("personal", personal.toJSON());
+    const cart = session.get("cart");
+    const seats = cart.seats;
+    const ticket = cart.ticket;
+    const eve = cart.event;
+
+    session.put("cart", {
+      seats: seats,
+      ticket: ticket,
+      event: eve,
+      personal: personal.toJSON(),
+    });
+
+    //session.put("personal", personal.toJSON());
 
     return response.route("transportPay");
   }
 
   async getTransportPay({ auth, view, request, response, session }) {
-    const seats = session.get("seats");
-    const ticket = session.get("ticket");
-    const eve = session.get("event");
+    const cart = session.get("cart");
+
+    const seats = cart.seats;
+    const ticket = cart.ticket;
+    const eve = cart.event;
+    const personal = cart.personal;
     const newUser = session.get("newUser");
-    const personal = session.get("personal");
-    console.log(seats, auth.user, newUser, personal);
 
     if (!seats || (!auth.user && !newUser) || !personal) {
       response.status(405).send("Error 405 Select seats first");
     } else {
+      const payments = await Payment.all();
+
+      let transports = await Transport.all();
+
+      const transpo = transports.toJSON();
+
+      transports = transpo.filter((x) => x.type !== "Post");
+      let post = transpo.filter((x) => x.type === "Post");
+      if (post) {
+        let postPrice = await getPostPrice(personal.zip);
+        transports.push({
+          id: post.pop().id,
+          type: "Post",
+          price: postPrice,
+        });
+        session.put("postPrice", postPrice);
+      }
+
       const totalPrice = await seats
         .reduce((acc, curr) => {
           return acc + +curr.price;
@@ -277,12 +496,172 @@ class SaleController {
 
       return view.render("order.quatrostep", {
         event: eve,
+        transports: transports,
+        payments: payments.toJSON(),
         quantity: seats.length,
         sector: ticket.sector,
         category: ticket.category,
         total_price: totalPrice,
       });
     }
+  }
+
+  async postTransportPay({ auth, view, request, response, session }) {
+    const { pay, transport } = request.all();
+
+    session.put("delivery", {
+      payment: pay,
+      transport: Array.isArray(transport) ? transport : [transport],
+    });
+
+    return response.route("controll");
+  }
+
+  async getControll({ auth, view, request, response, session }) {
+    const cart = session.get("cart");
+    const seats = cart.seats;
+    const ticket = cart.ticket;
+    const eve = cart.event;
+    const personal = cart.personal;
+    const newUser = session.get("newUser");
+    const delivery = session.get("delivery");
+    const postPrice = session.get("postPrice");
+
+    if (!seats || (!auth.user && !newUser) || !personal || !delivery) {
+      response.status(405).send("Error 405 Select seats first");
+    } else {
+      let transports = await Transport.query()
+        .whereIn("id", delivery.transport)
+        .fetch();
+
+      transports = transports.toJSON();
+
+      let transport = transports.reduce((acc, curr) => {
+        if (curr.type != "Post") {
+          acc.push(curr);
+        } else if (curr.type === "Post") {
+          acc.push({
+            type: "Post",
+            price: postPrice,
+          });
+        }
+        return acc;
+      }, new Array());
+
+      const payment = await Payment.find(delivery.payment);
+
+      let aditionPrice =
+        +payment.price +
+        transport.reduce((acc, curr) => {
+          console.log(curr.price);
+          return acc + +curr.price;
+        }, 0);
+
+      let totalPrice = await seats
+        .reduce((acc, curr) => {
+          return acc + +curr.price;
+        }, 0)
+        .toFixed(2);
+
+      totalPrice = parseFloat(totalPrice) + parseFloat(aditionPrice);
+
+      const { currency } = request.all();
+
+      let fPrice = null;
+      if (currency) {
+        fPrice = await getFCurrency(currency, totalPrice);
+      }
+
+      return view.render("order.final", {
+        event: eve,
+        personal: personal,
+        transport: transport,
+        payment: payment.toJSON(),
+        quantity: seats.length,
+        sector: ticket.sector,
+        category: ticket.category,
+        addPrice: aditionPrice.toFixed(2),
+        total_price: totalPrice.toFixed(2),
+        foreignPrice: {
+          type: currency,
+          price: fPrice,
+        },
+      });
+    }
+  }
+
+  async postControll({ auth, view, request, response, session }) {
+    const cart = session.pull("cart");
+    const seats = cart.seats;
+    const ticket = cart.ticket;
+    const eve = cart.event;
+    const personal = cart.personal;
+    const newUser = session.pull("newUser");
+    const delivery = session.pull("delivery");
+    const postPrice = session.pull("postPrice");
+
+    let ticektPrice = await seats
+      .reduce((acc, curr) => {
+        return acc + +curr.price;
+      }, 0)
+      .toFixed(2);
+
+    let mailId = await Transport.findBy("type", "Email");
+
+    console.log("Email", mailId.id);
+
+    let transportid = delivery.transport.filter((x) => x != mailId.id);
+
+    let user;
+    if (newUser) {
+      user = await User.findOrCreate({
+        email: newUser.email,
+        password: newUser.password,
+        fname: personal.fname,
+        lname: personal.lname,
+      });
+    } else {
+      user = await auth.user;
+    }
+
+    let newpersonal = await PersonalInformation.create(personal);
+
+    let newsale = await Sale.create({
+      zakaznik_id: user.id,
+      event_id: eve.id,
+      ticket_count: seats.length,
+      ticket_price: ticektPrice,
+      transport_price: transportid.length ? postPrice : null,
+      personal_id: newpersonal.id,
+      payment_id: delivery.payment,
+      transport_id: transportid.length ? transportid.pop() : null,
+      state: "placed",
+    });
+
+    for await (const item of seats) {
+      Seat.create({
+        category: item.category,
+        sector: item.sector,
+        price: item.price,
+        sale_id: newsale.id,
+        discount_id: item.discount_id,
+      });
+    }
+
+    let seatsIds = seats.map((x) => x.id);
+
+    sendEmail(user.email, seatsIds, eve);
+
+    session.put("success", {
+      saleId: newsale.id,
+      username: user ? `${user.fname} ${user.lname}` : "",
+    });
+
+    const tickets = await TicketType.find(ticket.id);
+    tickets.available = tickets.available - seats.length;
+    tickets.save();
+
+    response.route("success");
   }
 }
 

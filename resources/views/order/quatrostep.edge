@@ -27,20 +27,102 @@
 <div class="container">
   <div class="row">
     <div class="col-8">
+      <form id="myform" action='/checkout/transportPay' method="POST">
+        <div class="wrapper-transit-pay">
+            <section class="pay-method">
+                <section class="d-flex align-items-center">
+                  <span class="material-icons">
+                    payment
+                    </span>
+                    <h6>Zvoľte jednu z možností platby</h6>
+                </section>
+    
+                <fieldset class="form-group">
+                    <div class="row">
+                        <div class="col-sm-10">
+                            @each(pay in payments)
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="pay"
+                                    id="gridRadios1"
+                                    value="{{pay.id}}"
+                                    checked
+                                />
+                                @if(pay.price > 0)
+                                <label class="form-check-label" for="gridRadios1">
+                                    {{pay.type}} -> Price: {{pay.price}} e
+                                </label>
+                                @else
+                                <label class="form-check-label" for="gridRadios1">
+                                  {{pay.type}} -> Price: Free
+                              </label>
+                                @endif
+                            </div>
+                            @endeach
+                        </div>
+                    </div>
+                </fieldset>
+            </section>
+            <section class="pay-method">
+                <section class="d-flex align-items-center">
+                  <span class="material-icons">
+                    local_shipping
+                    </span>
+                    <h6>Zvoľte jednu z prepravy</h6>
+                </section>
+    
+                <fieldset class="form-group">
+                    <div class="row">
+                        <div class="col-sm-10">
+                            @each(tran in transports)
+                            <div class="form-check">
+                              @if(tran.type === 'Email')
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="transport"
+                                    id="gridRadios1"
+                                    value="{{tran.id}}"
+                                    checked
+                                    disabled
+                                />
+                                <input name="transport" type="hidden" value="{{tran.id}}"/>
+                                @else
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="transport"
+                                    id="gridRadios1"
+                                    value="{{tran.id}}"
+                                />
+                              @endif
+                                @if(tran.price > 0)
+                                <label class="form-check-label" for="gridRadios1">
+                                    {{tran.type}} -> Price: {{tran.price}} e
+                                </label>
+                                @else
+                                <label class="form-check-label" for="gridRadios1">
+                                  {{tran.type}} -> Price: Free
+                                </label>
+                                @endif
+                            </div>
+    
+                           @endeach
+                        </div>
+                    </div>
+                </fieldset>
+            </section>
+        </div>
+    </form>
     </div>
     <div class="col-4">
       @include("partial.sideticket")
-      <button
-        type="button"
-        class="btn btn-outline-info mt-2"
-        style="width: inherit;"
-      >
-        Foreign Currency
-      </button>
     </div>
   </div>
   <div class="container d-flex justify-content-center">
-    <button form="accountForm" class="btn btn-primary mt-5" type="submit">
+    <button form="myform" class="btn btn-primary mt-5" type="submit">
       Continue in order
     </button>
   </div>

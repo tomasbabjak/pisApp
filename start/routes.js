@@ -34,7 +34,11 @@ Route.post("login", "UserController.login")
   .middleware("guest")
   .as("user.login");
 
+Route.get("/logout", "UserController.logout");
+
 Route.post("/checkout/cart", "SaleController.index").as("orderProfile");
+Route.get("/checkout/cart", "SaleController.cart").as("getCart");
+Route.post("/checkout/emptycart", "SaleController.emptyCart").as("emptyCart");
 Route.get("/checkout/user", "SaleController.user").as("orderUser");
 Route.post("/checkout/user", "SaleController.loginCreate").as(
   "orderloginCreate"
@@ -49,6 +53,24 @@ Route.post("/checkout/informations", "SaleController.billing").as(
 Route.get("/checkout/transportPay", "SaleController.getTransportPay").as(
   "transportPay"
 );
+
+Route.post("/checkout/transportPay", "SaleController.postTransportPay").as(
+  "transportPay"
+);
+
+Route.get("/checkout/controll", "SaleController.getControll").as("controll");
+
+Route.post("/checkout/controll", "SaleController.postControll").as(
+  "placeOrder"
+);
+
+Route.get("/checkout/final", ({ view, session }) => {
+  let params = session.pull("success");
+  return view.render("order.conf", {
+    username: params.username,
+    saleId: params.saleId,
+  });
+}).as("success");
 
 Route.get("/events/:id", "EventController.show").as("eventsProfile");
 

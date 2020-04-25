@@ -1,0 +1,24 @@
+@layout('master') 
+
+@section('content')
+
+<div class="container center">
+    <div class="row text-center justify-content-center">
+        <div class="col-sm-6 col-sm-offset-3">
+            <br /><br />
+            <h2 style="color:#0fad00">Ďakujeme za vašu objednávku</h2>
+            <h3>Važený zákazník, {{ username }}</h3>
+            <p style="font-size:20px;color:#5C5C5C;">
+                Vaša objednávka prebehla úspešne. Objednavka je v stave prijatá
+                a evidovaná pod číslom objednávky <u>{{ saleId }} </u>
+            </p>
+            <p style="font-size:20px;color:#5C5C5C;">
+                V prídape problémov alebo pochybností nás neváhajte kontaktovať.
+            </p>
+            <a href="/" class="btn btn-success"> Pokračovať v nakupovaní </a>
+            <br /><br />
+        </div>
+    </div>
+</div>
+
+@endsection

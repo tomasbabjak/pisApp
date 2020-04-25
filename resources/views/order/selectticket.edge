@@ -2,36 +2,56 @@
 
 @section('content')
 <hr />
+<form action="{{url}}" method="get">
 <div class="container" style="max-width: inherit;">
   <ul class="nav nav-pills">
     <li class="nav-item mr-4">
       <div class="form-group">
         <h6 for="sortBy" class="control-label">Sort By:</h6>
-        <select class="form-control" id="sortBy">
-          <option>Best deal</option>
-          <option>Lowest first</option>
+        <select name="sort" class="form-control" id="sortBy">
+          @if(request.get().sort == "low")
+          <option value="best">Best deal</option>
+          <option selected value="low">Lowest first</option>
+          <option value="high">Highest first</option>
+          @elseif(request.get().sort == "high")
+          <option value="best">Best deal</option>
+          <option value="low">Lowest first</option>
+          <option selected value="high">Highest first</option>
+          @else
+          <option selected value="best">Best deal</option>
+          <option value="low">Lowest first</option>
+          <option value="high">Highest first</option>
+          @endif
         </select>
       </div>
     </li>
     <li class="nav-item mr-4">
         <div class="form-group">
-            <h6 for="sortBy" class="control-label">Quantity:</h6>
-            <select class="form-control" id="sortBy">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
+            <h6 for="quan" class="control-label">Quantity:</h6>
+            <select name="quantity" class="form-control" id="quan">
+              <option value="0">All</option>
+              @each(item in range(1,7))
+              @if(request.get().quantity == item)
+              <option selected value="{{item}}">{{item}}</option>
+              @else
+              <option value="{{item}}">{{item}}</option>
+              @endif
+              @endeach
             </select>
           </div>
     </li>
     <li class="nav-item mr-4">
         <div class="form-group">
-            <h6 for="sortBy" class="control-label">Category:</h6>
-            <select class="form-control" id="sortBy">
-              <option>VIP</option>
-              <option>Basic</option>
+            <h6 for="cat" class="control-label">Category:</h6>
+            <select name="category" class="form-control" id="cat">
+              <option value="0">All</option>
+              @each(cat in categories)
+              @if(request.get().category == cat)
+              <option selected value="{{cat}}">{{cat}}</option>
+              @else
+              <option value="{{cat}}">{{cat}}</option>
+              @endif
+              @endeach
             </select>
           </div>
     </li>
@@ -79,8 +99,12 @@
         <div class="mb-3 slider-range"></div>
       </div>
     </li>
+    <li style="align-self:center">
+      <button class="btn btn-primary" type="submit">Filter Tickets</button>
+    </li>
   </ul>
 </div>
+</form>
 
 <hr />
 
@@ -209,9 +233,13 @@
   $(function () {
     $(".slider-range").slider({
       range: true,
-      min: 0,
-      max: 1000,
-      values: [0, 500],
+      min: {{minPrice}},
+      max: {{maxPrice}},
+      @if(request.get().min_price && request.get().max_price)
+      values: [{{request.get().min_price}}, {{request.get().max_price}}],
+      @else
+      values: [{{minPrice}}, {{maxPrice}}],
+      @endif
       slide: function (event, ui) {
         $(".amountmin").val(ui.values[0]);
         $(".amountmax").val(ui.values[1]);

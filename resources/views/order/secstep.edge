@@ -15,17 +15,30 @@
         <div class="container-progressbar">
             <ul class="progressbar">
               <li class="act">cart</li>
-              <li>User</li>
-              <li>Perosnal informations</li>
-              <li>Controll</li>
+              <li >Perosnal informations</li>
+              <li >Transport & Payment</li>
+              <li >Controll</li>
             </ul>
           </div>
       </div>
     </div>
   </div>
 </header>
-@if(error)
-<p>{{error}}</p>
+@if(hasErrorFor('login'))
+<div class="alert alert-warning alert-dismissible show" role="alert">
+  <strong>Error</strong> Wrong password or name.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+@endif
+@if(hasErrorFor('exist'))
+<div class="alert alert-warning alert-dismissible show" role="alert">
+  <strong>Error</strong> User with this email exist.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
 @endif
 <section>
   <div class="container">
@@ -70,5 +83,11 @@
     <button form="accountForm" class="btn btn-primary mt-5"type="submit">Continue in order</button>
   </div>
 </section>
+
+<script>
+  $(".alert").delay(4000).slideUp(200, function() {
+    $(this).alert('close');
+});
+</script>
 
 @endsection

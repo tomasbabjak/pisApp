@@ -135,3 +135,38 @@ body {
   background: #008b00;
   color: white;
 }
+
+.pay-method,
+.wrapper-transit-pay {
+  width: 90%;
+  max-width: 500px;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.wrapper-transit-pay .pay-method section {
+  background-color: whitesmoke;
+  border-radius: 5px;
+  height: 30px;
+  align-items: center;
+}
+
+.wrapper-transit-pay button {
+  width: 100%;
+  margin: 0 auto;
+}
+.navbar-brand {
+  font-family: "Just Me Again Down Here", cursive;
+  font-size: xx-large !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.customer-panel button {
+  color: whitesmoke;
+}
+
+#dropdownMenuLink {
+  color: whitesmoke;
+}
