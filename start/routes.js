@@ -73,6 +73,8 @@ Route.get("/checkout/final", ({ view, session }) => {
 }).as("success");
 
 Route.get("/events/:id", "EventController.show").as("eventsProfile");
+Route.get("/search", "SearchController.show").as("search");
+Route.post("/search", "SearchController.update").as("update");
 
 Route.get("users/:id", "UserController.show").middleware("auth");
 

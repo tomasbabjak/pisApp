@@ -1,0 +1,148 @@
+@layout('master') 
+
+@section('content')
+<hr />
+<form action="/search" method="POST">
+<div class="container" style="max-width: inherit;">
+  <ul class="nav nav-pills">
+    <li class="nav-item mr-4">
+      <div class="form-group">
+        <h6 for="name" class="control-label">Band name:</h6>
+          <input
+          type="text"
+          name="band_name"
+          class="form-control"
+          id="band"
+          placeholder="Imagine Dragons"
+        />
+      </div>
+    </li>
+    <li class="nav-item mr-4">
+        <div class="form-group">
+          <h6 for="country" class="control-label">Country:</h6>
+          <select name="state" class="form-control" id="country" onchange="populateCities(this.value);">
+            <option selected value="None">Choose country</option>
+            @each(country in countries)
+            <option value="{{country.name}}">{{country.name_en}}</option>
+            @endeach
+          </select>  
+        </div>
+    </li>
+    <!-- <li class="nav-item mr-4">
+        <div class="form-group">
+          <h6 for="city" class="control-label">City:</h6>
+          <select name="City" class="form-control" id="city">
+            <option selected value="None">Choose city</option>
+            @each(city in cities)
+            <option value="{{city.name}}">{{city.name_en}}</option>
+            @endeach
+          </select>  
+        </div>
+    </li> -->
+    <li class="nav-item mr-4">
+        <div class="form-group">
+          <h6 for="date" class="control-label">Date:</h6>
+          <input type="date" class="form-control" name="date" id="date"></input>
+        </div>
+    </li>
+    <li style="align-self:center">
+      <button class="btn btn-primary" type="submit">Find events</button>
+    </li>
+  </ul>
+</div>
+</form>
+
+<hr />
+
+<div class="container" style="max-width: inherit;">
+  <div class="row justify-content-center">
+    <div class="col-6 left main-content-onepage" style="outline-width: thick;">
+      <ul class="list-group">
+          @each(event in events)
+        <li class="list-group-item">
+          <div class="card">
+            <div class="container">
+              <div class="row align-items-center justify-content-between">
+                <div class="col-7">
+                  <h5>{{event.title}}</h5>
+                  <p>{{event.date}}</p>
+                  <p>{{event.place}}</p>
+                </div>
+                <div class="col-5">
+                  <button
+                    type="button"
+                    class="btn btn-light"
+                    data-toggle="modal"
+                    data-target="#ModalEvent{{ticket.id}}"
+                  >
+                    Detail
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        @endeach
+      </ul>
+    </div>
+    <div class="col-6 right" style="outline-width: thick;">
+      MAPA IN PROGRESS MAYBE
+    </div>
+  </div>
+</div>
+
+@each(event in events)
+<div
+  class="modal"
+  id="ModalEvent{{ticket.id}}"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center" id="exampleModalLongTitle">
+          {{ event.title }}
+        </h4>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="row justify-content-between">
+            <div class="col-12 text-center">
+              <p>{{event.date}}</p>
+              <p>{{event.place}}</p>
+              <p>
+              @each(genre in event.genres)
+                {{genre}}
+              @endeach
+              </p>
+              <p>Predpoved pocasia:</p>
+              <p>Predpoved pocasia nie je k dispozicii</p>
+            </div>
+          </div>
+        </div>
+        <form action="/events/{{event.id}}" method="GET">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                Close
+              </button>
+              <button type="submit" class="btn btn-primary">Buy ticket</button>
+        </form>
+    </div>
+    </div>
+  </div>
+</div>
+@endeach
+
+@endsection 
