@@ -1,6 +1,8 @@
 'use strict'
 
 const Event = use("App/Models/Event");
+const User = use("App/Models/User");
+
 const Database = use("Database");
 const parser = require("xml2js").parseStringPromise;
 const soapRequest = require("easy-soap-request");
@@ -20,17 +22,26 @@ class SearchController {
       };
 
     async update({view, request, response, params}){
-        const events = await Event.all()
+        var events = await Event.all()
+        events = events.toJSON()
         const countries = await getAllCountries()
-        const users = request.only(['band_name', 'state', 'date'])
-        if(users.band_name){
-            var result = events.toJSON().filter(event => users.band_name == event.usporiadatel)
+        const final = request.only(['band_name', 'state', 'date'])
+
+        if(final.band_name){
+            const user = await User.query().where('fname', final.band_name).first()
+            console.log(user)
+            if(!user){
+                console.log('User not found')
+                return
+            }
+            events = events.filter(event => user.id == event.usporiadatel)
+            if(!events){
+                console.log('User has no events')
+                return
+            }
         }
-        else{
-            var result = events
-        }
-        if(users.date){
-            var result = events.toJSON().filter(event => event.date.toISOString().substr(0,10) == users.date)
+        if(final.date){
+            var result = events.filter(event => event.date.toISOString().substr(0,10) == final.date)
         }
         else {
             var result = events
