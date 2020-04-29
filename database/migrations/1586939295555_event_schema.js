@@ -7,7 +7,8 @@ class EventSchema extends Schema {
   up() {
     this.create("events", (table) => {
       table.increments();
-      table.integer("usporiadatel").references("id").inTable("users");
+      table.integer("usporiadatel").unsigned();
+      table.foreign("usporiadatel").references("id").inTable("bands");
       table.text("title");
       table.string("type");
       table.json("genres");

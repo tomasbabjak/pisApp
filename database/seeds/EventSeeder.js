@@ -16,6 +16,7 @@ const Database = use("Database");
 
 class EventSeeder {
   async run() {
+    const band = await Factory.model("App/Models/Band").create();
     const event = await Factory.model("App/Models/Event").create();
     const ticketarray = await Factory.model("App/Models/TicketType").createMany(
       10

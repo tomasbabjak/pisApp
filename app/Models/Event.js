@@ -10,6 +10,9 @@ class Event extends Model {
   ticketTypes() {
     return this.hasMany("App/Models/TicketType");
   }
+  usporiadatel() {
+    return this.belongsTo("App/Models/Band");
+  }
 }
 
 module.exports = Event;

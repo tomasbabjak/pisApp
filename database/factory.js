@@ -14,10 +14,22 @@
 /** @type {import('@adonisjs/lucid/src/Factory')} */
 const Factory = use("Factory");
 
+Factory.blueprint("App/Models/Band", (faker) => {
+  return {
+    name: "The Lonely Island",
+    origin_year: new Date("2001-01-01"),
+    genres: JSON.stringify(["Rock", "Pop"]),
+    web_page: "http://www.thelonelyisland.com/",
+    informations:
+      "The Lonely Island is an American comedy trio, formed by Akiva Schaffer, Andy Samberg, and Jorma Taccone in Berkeley, California in 2001. The three first met in junior high, and went on to write and feature in the American TV program Saturday Night Live (SNL). ",
+  };
+});
+
 Factory.blueprint("App/Models/Event", (faker) => {
   return {
     title: faker.sentence(),
     type: "concert",
+    usporiadatel: 1,
     genres: JSON.stringify(["Rock", "Pop"]),
     date: faker.date(),
     place: faker.address() + " " + faker.country({ full: true }),

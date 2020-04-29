@@ -3,6 +3,7 @@ const { validate } = use("Validator");
 const Event = use("App/Models/Event");
 const Sale = use("App/Models/Sale");
 const Seat = use("App/Models/Seat");
+const Customer = use("App/Models/Customer");
 const Discount = use("App/Models/Discount");
 const User = use("App/Models/User");
 const PersonalInformation = use("App/Models/PersonalInformation");
@@ -614,11 +615,15 @@ class SaleController {
 
     let user;
     if (newUser) {
+      const customer = new Customer();
+      customer.fname = personal.fname;
+      customer.lname = personal.lname;
+      await customer.save();
+
       user = await User.findOrCreate({
         email: newUser.email,
         password: newUser.password,
-        fname: personal.fname,
-        lname: personal.lname,
+        nickname: personal.lname,
       });
     } else {
       user = await auth.user;
@@ -654,7 +659,7 @@ class SaleController {
 
     session.put("success", {
       saleId: newsale.id,
-      username: user ? `${user.fname} ${user.lname}` : "",
+      username: user ? `${user.nickname}` : "",
     });
 
     const tickets = await TicketType.find(ticket.id);

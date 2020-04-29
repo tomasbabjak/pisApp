@@ -1,7 +1,7 @@
 "use strict";
 
 const User = use("App/Models/User");
-
+const Customer = use("App/Models/Customer");
 const Database = use("Database");
 
 class UserController {
@@ -34,8 +34,21 @@ class UserController {
           .status(400)
           .send({ message: { error: "User already registered" } });
       }
-      const user = await User.create(data);
 
+      const customer = new Customer();
+      customer.fname = data.fname;
+      customer.lname = data.lname;
+      await customer.save();
+
+      const user = new User();
+      user.nickname = data.lname;
+      user.email = data.email;
+      user.password = data.password;
+      user.type = "Customer";
+      user.user_type = customer.id;
+      await user.save();
+
+      console.log("Customer", customer.id, "User", user.id);
       // const userId = await Database
       //   .table('users')
       //   .insert({
@@ -51,6 +64,7 @@ class UserController {
 
       return user;
     } catch (err) {
+      console.log(err);
       return response.status(err.status).send(err);
     }
   }
