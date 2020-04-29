@@ -61,7 +61,7 @@ body {
 }
 
 .main-content-onepage {
-  max-height: 80vh;
+  max-height: 60vh;
   overflow-y: scroll;
 }
 
