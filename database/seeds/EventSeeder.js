@@ -25,6 +25,7 @@ class EventSeeder {
     event.genres = JSON.stringify(["All"]);
     event.date = new Date("04/20/2021/16:20:00");
     event.place = "Nakatomi Plaza, Los Angeles";
+    event.country = "United States"
     event.paid = true;
     event.state = "inprogress";
     await event.save();

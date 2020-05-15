@@ -7,23 +7,22 @@
   <ul class="nav nav-pills">
     <li class="nav-item mr-4">
       <div class="form-group">
-        <h6 for="name" class="control-label">Band name:</h6>
-          <input
-          type="text"
-          name="band_name"
-          class="form-control"
-          id="band"
-          placeholder="Imagine Dragons"
-        />
+        <h6 for="band" class="control-label">Band name:</h6>
+        <select name="band_name" class="form-control" id="band">
+          <option>Choose band</option>
+          @each(band in bands)
+          <option value="{{band.id}}">{{band.name}}</option>
+          @endeach
+        </select>  
       </div>
     </li>
     <li class="nav-item mr-4">
         <div class="form-group">
           <h6 for="country" class="control-label">Country:</h6>
-          <select name="state" class="form-control" id="country" onchange="populateCities(this.value);">
-            <option selected value="None">Choose country</option>
+          <select name="state" class="form-control" id="country">
+            <option>Choose country</option>
             @each(country in countries)
-            <option value="{{country.name}}">{{country.name_en}}</option>
+            <option value="{{country.name_en}}">{{country.name_en}}</option>
             @endeach
           </select>  
         </div>
@@ -58,7 +57,7 @@
   <div class="row justify-content-center">
     <div class="col-6 left main-content-onepage" style="outline-width: thick;">
       <ul class="list-group">
-          @each(event in events)
+        @each(event in events)
         <li class="list-group-item">
           <div class="card">
             <div class="container">
@@ -73,7 +72,7 @@
                     type="button"
                     class="btn btn-light"
                     data-toggle="modal"
-                    data-target="#ModalEvent{{ticket.id}}"
+                    data-target="#ModalEvent{{event.id}}"
                   >
                     Detail
                   </button>
@@ -94,7 +93,7 @@
 @each(event in events)
 <div
   class="modal"
-  id="ModalEvent{{ticket.id}}"
+  id="ModalEvent{{event.id}}"
   tabindex="-1"
   role="dialog"
   aria-labelledby="exampleModalCenterTitle"
@@ -132,12 +131,12 @@
           </div>
         </div>
         <form action="/events/{{event.id}}" method="GET">
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                Close
-              </button>
-              <button type="submit" class="btn btn-primary">Buy ticket</button>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Buy ticket</button>
+          </div>
         </form>
     </div>
     </div>

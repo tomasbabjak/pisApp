@@ -32,7 +32,8 @@ Factory.blueprint("App/Models/Event", (faker) => {
     usporiadatel: 1,
     genres: JSON.stringify(["Rock", "Pop"]),
     date: faker.date(),
-    place: faker.address() + " " + faker.country({ full: true }),
+    place: faker.address(),
+    country: faker.pickone(['Slovakia', 'Hungary', 'India']),
     paid: faker.bool(),
     state: faker.pickone(["finished", "inprogress"]),
   };

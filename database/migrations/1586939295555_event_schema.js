@@ -14,6 +14,7 @@ class EventSchema extends Schema {
       table.json("genres");
       table.datetime("date");
       table.text("place");
+      table.text("country");
       table.boolean("paid");
       table.string("state");
       table.timestamps();
