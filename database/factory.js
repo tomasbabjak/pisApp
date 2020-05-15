@@ -27,7 +27,7 @@ Factory.blueprint("App/Models/Band", (faker) => {
 
 Factory.blueprint("App/Models/Event", (faker) => {
   return {
-    title: faker.sentence(),
+    title: faker.sentence({ words: 3 }),
     type: "concert",
     usporiadatel: 1,
     genres: JSON.stringify(["Rock", "Pop"]),

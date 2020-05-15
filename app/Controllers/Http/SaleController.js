@@ -16,6 +16,19 @@ const TicketType = use("App/Models/TicketType");
 
 const Database = use("Database");
 
+const dateOptions = {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+};
+
+function getLocalDate(date) {
+  return new Date(date).toLocaleDateString("en-EN", dateOptions);
+}
+
 async function getRegions() {
   const xmlData =
     '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://pis.predmety.fiit.stuba.sk/pis/students/team084region/types">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <typ:getAll/>\n   </soapenv:Body>\n</soapenv:Envelope>';
@@ -286,6 +299,7 @@ class SaleController {
         seats: seats,
         discounts: disc.toJSON(),
         event: eve,
+        date: getLocalDate(eve.date),
         quantity: seats.length,
         sector: ticket.sector,
         category: ticket.category,
@@ -322,6 +336,7 @@ class SaleController {
 
       return view.render("order.secstep", {
         event: eve,
+        date: getLocalDate(eve.date),
         quantity: seats.length,
         sector: ticket.sector,
         category: ticket.category,
@@ -377,6 +392,13 @@ class SaleController {
 
       console.log(regions);
 
+      let custom;
+      if (!newUser) {
+        if (auth.user.type === "Customer") {
+          custom = await Customer.find(auth.user.user_type);
+        }
+      }
+
       const totalPrice = await seats
         .reduce((acc, curr) => {
           return acc + +curr.price;
@@ -385,6 +407,8 @@ class SaleController {
 
       return view.render("order.thstep", {
         event: eve,
+        date: getLocalDate(eve.date),
+        customer: custom,
         quantity: seats.length,
         regions: regions,
         sector: ticket.sector,
@@ -497,6 +521,7 @@ class SaleController {
 
       return view.render("order.quatrostep", {
         event: eve,
+        date: getLocalDate(eve.date),
         transports: transports,
         payments: payments.toJSON(),
         quantity: seats.length,
@@ -575,6 +600,7 @@ class SaleController {
 
       return view.render("order.final", {
         event: eve,
+        date: getLocalDate(eve.date),
         personal: personal,
         transport: transport,
         payment: payment.toJSON(),
@@ -624,6 +650,8 @@ class SaleController {
         email: newUser.email,
         password: newUser.password,
         nickname: personal.lname,
+        type: "Customer",
+        user_type: customer.id,
       });
     } else {
       user = await auth.user;

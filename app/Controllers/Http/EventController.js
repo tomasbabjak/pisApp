@@ -4,6 +4,19 @@ const Event = use("App/Models/Event");
 
 const Database = use("Database");
 
+const dateOptions = {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+};
+
+function getLocalDate(date) {
+  return new Date(date).toLocaleDateString("en-EN", dateOptions);
+}
+
 class EventController {
   async show({ view, request, response, params }) {
     const event_id = params.id;
@@ -54,6 +67,7 @@ class EventController {
 
     return view.render("order.selectticket", {
       event: eve.toJSON(),
+      date: getLocalDate(eve.date),
       tickets: ttt.toJSON(),
       array6: [...Array(6)],
       categories: categories,

@@ -2,10 +2,15 @@
     <h5>
       <b>{{ event.title }}</b>
     </h5>
+    <p class="mt-3 text-center font-weight-bold h6">Date & Time</p>
     <p class="text-center">
-      {{ event.date }} <br />
+      {{ date }}
+    </p>
+    <p class="mt-3 text-center font-weight-bold h6">Place</p>
+    <p class="text-center">
       {{ event.place }}
     </p>
+    <p class="mt-3 text-center font-weight-bold h6">Ticket</p>
     <p class="text-center">
       Sector {{ sector }} <br />
       Category: {{ category }}
@@ -19,12 +24,12 @@
         @if(addPrice)
         <tr>
             <td class="font-weight-bold">A price:</td>
-            <td class="text-center font-weight-bold">{{ addPrice }}</td>
+            <td class="text-center font-weight-bold">{{ addPrice }} €</td>
           </tr>
         @endif
         <tr>
           <td class="font-weight-bold">Total price</td>
-          <td class="text-center font-weight-bold">{{ total_price }} e</td>
+          <td class="text-center font-weight-bold">{{ total_price }} €</td>
         </tr>
       </tbody>
     </table>

@@ -38,7 +38,7 @@
                 name="fname"
                 class="form-control"
                 id="inputName"
-                value="{{auth.user ? auth.user.fname : ""}}"
+                value="{{customer ? customer.fname : ""}}"
                 placeholder="Meno"
                 required
               />
@@ -52,7 +52,7 @@
                 type="text"
                 name="lname"
                 class="form-control"
-                value="{{auth.user ? auth.user.lname : ""}}"
+                value="{{customer ? customer.lname : ""}}"
                 id="inputSurename"
                 placeholder="Priezvisko"
                 required

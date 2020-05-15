@@ -7,7 +7,7 @@
   <ul class="nav nav-pills">
     <li class="nav-item mr-4">
       <div class="form-group">
-        <h6 for="sortBy" class="control-label">Sort By:</h6>
+        <h6 for="sortBy" class="control-label font-weight-bold">Sort By</h6>
         <select name="sort" class="form-control" id="sortBy">
           @if(request.get().sort == "low")
           <option value="best">Best deal</option>
@@ -27,7 +27,7 @@
     </li>
     <li class="nav-item mr-4">
         <div class="form-group">
-            <h6 for="quan" class="control-label">Quantity:</h6>
+            <h6 for="quan" class="control-label font-weight-bold">Quantity</h6>
             <select name="quantity" class="form-control" id="quan">
               <option value="0">All</option>
               @each(item in range(1,7))
@@ -42,7 +42,7 @@
     </li>
     <li class="nav-item mr-4">
         <div class="form-group">
-            <h6 for="cat" class="control-label">Category:</h6>
+            <h6 for="cat" class="control-label font-weight-bold">Category</h6>
             <select name="category" class="form-control" id="cat">
               <option value="0">All</option>
               @each(cat in categories)
@@ -57,7 +57,7 @@
     </li>
     <li class="nav-item">
       <div class="container" style="max-width: 300px;">
-        <h6 class="control-label">Select price range:</h6>
+        <h6 class="control-label font-weight-bold">Price range</h6>
         <span>
           <div class="d-flex justify-content-center">
             <span>Od €</span>
@@ -100,7 +100,7 @@
       </div>
     </li>
     <li style="align-self:center">
-      <button class="btn btn-primary" type="submit">Filter Tickets</button>
+      <button class="button ml-3" type="submit">Filter Tickets</button>
     </li>
   </ul>
 </div>
@@ -114,10 +114,10 @@
       <ul class="list-group">
           @each(ticket in tickets)
         <li class="list-group-item">
-          <div class="card">
+          <div class="card custom-card">
             <div class="container">
               <div class="row align-items-center justify-content-between">
-                <div class="col-7">
+                <div class="col-8">
                   <h5>Section {{ticket.sector}} - {{ticket.category}}</h5>
                     @if(ticket.available > 6)
                     <p>1-6 tickets </p>
@@ -125,14 +125,14 @@
                     <p>1-{{ticket.available}} tickets </p>
                     @endif
                 </div>
-                <div class="col-5">
+                <div class="col-4">
                   <button
                     type="button"
-                    class="btn btn-light"
+                    class="button"
                     data-toggle="modal"
                     data-target="#ModalTicket{{ticket.id}}"
                   >
-                    {{ticket.price}}e / person
+                    {{ticket.price}} €
                   </button>
                 </div>
               </div>
@@ -176,10 +176,13 @@
         <div class="container">
           <div class="row justify-content-between">
             <div class="col-6 text-center">
-              <p>{{event.date}}</p>
+              <p class="mt-3 text-center font-weight-bold h6">Date & Time</p>
+              <p>{{date}}</p>
+              <p class="mt-3 text-center font-weight-bold h6">Place</p>
               <p>{{event.place}}</p>
             </div>
             <div class="col-6 text-center">
+              <p class="mt-3 text-center font-weight-bold h6">Ticket</p>
               <p>Section {{ticket.sector}}</p>
               <p>{{ticket.category}}</p>
             </div>
@@ -209,7 +212,7 @@
         </div>
         <div class="d-flex justify-content-center mt-2">
           <label for="pricept">Price per ticket:</label>
-          <p id="pricept"><b>E {{ticket.price}}</b></p>
+          <p id="pricept"><b>{{ticket.price}} €</b></p>
         </div>
       </div>
       <div class="modal-footer">
