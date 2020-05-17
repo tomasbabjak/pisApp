@@ -1,31 +1,16 @@
-# Adonis fullstack application
+# Hudobný portál
 
-This is the fullstack boilerplate for AdonisJs, it comes pre-configured with.
+**Autor**: Tomaš Babjak, Daniel Minarik
 
-1. Bodyparser
-2. Session
-3. Authentication
-4. Web security middleware
-5. CORS
-6. Edge template engine
-7. Lucid ORM
-8. Migrations and seeds
+---
 
-## Setup
+## Spustenie systému
+Požiadavkov na spustenie servara je mať nainštalovaný Node verzie 8.0.0 a vyššie. Následne spustenie sa realizujú nasledovne.
 
-Use the adonis command to install the blueprint
+1. Rozbaľ zip súbor
+2. Prejdi do daného priečinka s projektom
+3. Spusti príkaz npm install -> vykoná inštalovanie balíčkov(framework,...)
+4. Spusti príkaz *adonis serve --dev* -> spustenie servera
+5. Server je predvolene spustený na adrese http://127.0.0.1:3333
 
-```bash
-//adonis new yardstick
-```
-
-or manually clone the repo and then run `npm install`.
-
-
-### Migrations
-
-Run the following command to run startup migrations.
-
-```js
-adonis migration:run
-```
+Na správne pracovanie je potrebné taktiež definovať pripojenie na databázu. Vytvorenie objektov v tejto databáze sa následne realizuje pomocou migrácií, resp. spustením príkazu *adonis migration:run*; *adonis seed*
