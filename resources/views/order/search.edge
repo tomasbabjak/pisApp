@@ -38,17 +38,6 @@
                   </select>  
                 </div>
             </li>
-            <!-- <li class="nav-item mr-4">
-                <div class="form-group">
-                  <h6 for="city" class="control-label">City:</h6>
-                  <select name="City" class="form-control" id="city">
-                    <option selected value="None">Choose city</option>
-                    @each(city in cities)
-                    <option value="{{city.name}}">{{city.name_en}}</option>
-                    @endeach
-                  </select>  
-                </div>
-            </li> -->
             <li class="nav-item mr-4">
                 <div class="form-group">
                   <h6 for="date" class="control-label">Date:</h6>
@@ -72,7 +61,7 @@
                 <div class="col-7">
                   <h5>{{event.title}}</h5>
                   <p>{{event.adate}}</p>
-                  <p>{{event.place}}</p>
+                  <p>{{event.city}}, {{event.country}}</p>
                 </div>
                 <div class="col-5">
                   <button
@@ -124,13 +113,14 @@
             <div class="col-12 text-center">
               <p>Date: {{event.adate}}</p>
               <p>Time: {{event.atime}}</p>
-              <p>Place: {{event.place}}, {{event.country}}</p>
+              <p>Place: {{event.place}}, {{event.city}}, {{event.country}}</p>
               <p>Genres:</p>
               @each(genre in event.genres)
-                {{genre}}
+                {{genre}},
               @endeach
               </p>
               <p>Temperature forecast: {{event.forecast}} \xB0C</p>
+              <p>Precipitation forecast: {{event.probab}} %</p>
             </div>
           </div>
         </div>

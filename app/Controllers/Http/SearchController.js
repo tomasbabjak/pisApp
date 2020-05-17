@@ -14,11 +14,22 @@ class SearchController {
         events = events.toJSON()
         const bands = await Band.all()
         const countries = await getAllCountries()
+        var timeInMs = Date.now();
 
         for (let e in events) {
-          events[e].forecast = await getForecast(events[e].country, events[e].date);
+          let values = await getForecast(events[e].city, events[e].date)
+          events[e].forecast = values[0]
+          events[e].acity = values[1][0].name
           events[e].adate = events[e].date.toString().substr(0,15)
           events[e].atime = events[e].date.toString().substr(16,16)
+
+          let probabs = await getProbab(events[e].city, events[e].date)
+          let time_diff = events[e].date.getTime() - timeInMs
+          if(time_diff > 864000000){ //864000000 ms == 10 days
+            events[e].probab = 'It is too far in the future'
+          }else{
+            events[e].probab = (probabs[0] *100).toFixed(2)
+          }
         }
         console.log(events)
 
@@ -61,10 +72,22 @@ class SearchController {
           var result = events
       }
 
+      var timeInMs = Date.now();
+
       for (let e in events) {
-        events[e].forecast = await getForecast(events[e].country, events[e].date);
+        let values = await getForecast(events[e].city, events[e].date)
+        events[e].forecast = values[0]
+        events[e].acity = values[1][0].name
         events[e].adate = events[e].date.toString().substr(0,15)
         events[e].atime = events[e].date.toString().substr(16,16)
+
+        let probabs = await getProbab(events[e].city, events[e].date)
+        let time_diff = events[e].date.getTime() - timeInMs
+        if(time_diff > 864000000){ //864000000 ms == 10 days
+          events[e].probab = 'It is too far in the future'
+        }else{
+          events[e].probab = (probabs[0] *100).toFixed(2)
+        }
       }
 
       return view.render("order.search", {
@@ -112,15 +135,16 @@ async function getAllCountries() {
       .catch((err) => console.log(err));
   }
 
-  async function getCity(country) {
+  async function getCity(city_name) {
+    console.log(city_name)
     var xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://pis.predmety.fiit.stuba.sk/pis/geoservices/cities/types">
     <soapenv:Header/>
     <soapenv:Body>
-       <typ:getCapitalByCountryName>
+       <typ:getByName>
           <name>`+ 
-          country
+          city_name
           + `</name>
-       </typ:getCapitalByCountryName>
+       </typ:getByName>
     </soapenv:Body>
   </soapenv:Envelope>`;
     const { response } = await soapRequest({
@@ -130,20 +154,22 @@ async function getAllCountries() {
         "Content-Type": "application/xml",
       },
     });
+    console.log(response)
+
     const { body } = response;
     return parser(body)
       .then((data) => {
         let parsedData = JSON.parse(JSON.stringify(data));
         let city =
-          parsedData["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][0]['ns1:getCapitalByCountryNameResponse'][0]['city'];
+          parsedData["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][0]['ns1:getByNameResponse'][0]['city'];
         return city;
       })
       .catch((err) => console.log(err));
   }
 
-  async function getForecast(country, date) {
+  async function getForecast(city_name, date) {
 
-    var city = await getCity(country)
+    var city = await getCity(city_name)
     var xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://pis.predmety.fiit.stuba.sk/pis/weatherforecast/types">
     <soapenv:Header/>
     <soapenv:Body>
@@ -161,6 +187,7 @@ async function getAllCountries() {
         "Content-Type": "application/xml",
       },
     });
+    
     // console.log(response)
     const { body } = response;
     return parser(body)
@@ -168,10 +195,42 @@ async function getAllCountries() {
         let parsedData = JSON.parse(JSON.stringify(data));
         let temp =
           parsedData["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][0]['ns1:getTemperatureByDateResponse'][0]['temperature'][0];
-        return temp;
+        return [temp, city];
       })
       .catch((err) => console.log(err));
   }
 
+  async function getProbab(city_name, date) {
+
+    var city = await getCity(city_name)
+    var xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://pis.predmety.fiit.stuba.sk/pis/weatherforecast/types">
+    <soapenv:Header/>
+    <soapenv:Body>
+       <typ:getPrecipitationProbability>
+          <date>`+ date.getFullYear()+'-' + (date.getMonth()+1) + '-'+date.getDate() +`</date>
+          <coord_lat>`+ city[0].coord_lat + `</coord_lat>
+          <coord_lon>`+ city[0].coord_lon + `</coord_lon>
+       </typ:getPrecipitationProbability>
+    </soapenv:Body>
+  </soapenv:Envelope>`;
+    const { response } = await soapRequest({
+      url: "http://pis.predmety.fiit.stuba.sk/pis/ws/WeatherForecast",
+      xml: xmlData,
+      headers: {
+        "Content-Type": "application/xml",
+      },
+    });
+    
+    // console.log(response)
+    const { body } = response;
+    return parser(body)
+      .then((data) => {
+        let parsedData = JSON.parse(JSON.stringify(data));
+        let temp =
+          parsedData["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][0]['ns1:getPrecipitationProbabilityResponse'][0]['probability'][0];
+        return [temp, city];
+      })
+      .catch((err) => console.log(err));
+  }
 
 module.exports = SearchController

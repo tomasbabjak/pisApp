@@ -22,13 +22,15 @@ class EventSeeder {
     event.title = "The Lonely Corona Tour";
     event.type = "concert";
     event.usporiadatel = 1;
-    event.genres = JSON.stringify(["All"]);
-    event.date = new Date("04/20/2021/16:20:00");
-    event.place = "Nakatomi Plaza, Los Angeles";
+    event.genres = JSON.stringify(["Pop", "Jazz", "B99"]);
+    event.date = new Date("05/20/2020/16:20:00");
+    event.place = "Nakatomi Plaza";
     event.country = "United States"
+    event.city = "Washington"
     event.paid = true;
     event.state = "inprogress";
     await event.save();
+
     const ticketarray = await Factory.model("App/Models/TicketType").createMany(
       10
     );
