@@ -57,18 +57,18 @@ async function getRegions() {
 }
 
 async function getPostPrice(zip) {
-  const distance = await getDistance(zip);
-
+  const distance = await getDistance(zip); // zistene, ze nefunguje korektne
+  console.log(+distance / 100);
   const xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://pis.predmety.fiit.stuba.sk/pis/transportservices/post/types">
   <soapenv:Header/>
   <soapenv:Body>
      <typ:priceForPackageDelivery>
-        <distance>${distance / 1000 + 10}</distance>
-        <weight>0.1</weight>
+        <distance>${+distance / 100}</distance>
+        <weight>1</weight>
         <width>0.22</width>
         <height>0.11</height>
-        <depth>0.002</depth>
-        <max_days>5</max_days>
+        <depth>0.22</depth>
+        <max_days>1</max_days>
      </typ:priceForPackageDelivery>
   </soapenv:Body>
 </soapenv:Envelope>`;
@@ -89,7 +89,7 @@ async function getPostPrice(zip) {
         parsedData["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][0][
           "ns1:priceForPackageDeliveryResponse"
         ][0]["price"][0];
-      return parseFloat(price).toFixed(2);
+      return (parseFloat(price) * 10).toFixed(2);
     })
     .catch((err) => console.log(err));
 }
@@ -160,7 +160,7 @@ async function getFCurrency(curr, amount) {
     .catch((err) => console.log(err));
 }
 
-async function sendEmail(email, seatsIds, event) {
+async function sendEmail(email, name, id) {
   const xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://pis.predmety.fiit.stuba.sk/pis/notificationservices/email/types">
   <soapenv:Header/>
   <soapenv:Body>
@@ -169,7 +169,7 @@ async function sendEmail(email, seatsIds, event) {
         <password>QLL9TL</password>
         <address>${email}</address>
         <subject>Hudobny portal - listky</subject>
-        <message>DObry den, vase listky na udolosť ${event.title}. Listky su...</message>
+        <message>Važený zákazník, ${name}, vasu objednávku sme zaevidovali do systému pod číslo ${id}. V prídape problémov alebo pochybností nás neváhajte kontaktovať.</message>
      </typ:notify>
   </soapenv:Body>
 </soapenv:Envelope>`;
@@ -505,13 +505,16 @@ class SaleController {
       let post = transpo.filter((x) => x.type === "Post");
       if (post) {
         let postPrice = await getPostPrice(personal.zip);
+        console.log("PostPrice", postPrice);
         transports.push({
           id: post.pop().id,
           type: "Post",
-          price: postPrice,
+          price: 2.5 + +postPrice,
         });
         session.put("postPrice", postPrice);
       }
+
+      console.log("tranport", transports);
 
       const totalPrice = await seats
         .reduce((acc, curr) => {
@@ -683,7 +686,7 @@ class SaleController {
 
     let seatsIds = seats.map((x) => x.id);
 
-    sendEmail(user.email, seatsIds, eve);
+    sendEmail(user.email, user ? `${user.nickname}` : "", newsale.id);
 
     session.put("success", {
       saleId: newsale.id,
